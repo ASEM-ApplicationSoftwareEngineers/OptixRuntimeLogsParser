@@ -2,6 +2,7 @@ const fileInput = document.getElementById('logFiles');
 const fileList = document.getElementById('fileList');
 const addFileButton = document.getElementById('addFileButton');
 const clearFilesButton = document.getElementById('clearFilesButton');
+const uploadedFilesBlock = document.getElementById('selectedFilesBlock');
 
 // Add file to the list
 addFileButton.addEventListener('click', () => {
@@ -13,6 +14,11 @@ addFileButton.addEventListener('click', () => {
             fileList.appendChild(listItem);
         }
         fileInput.value = ''; // Clear the input for new selections
+        uploadedFilesBlock.style.display = 'block'; // Show the selected files block
+    }
+    else
+    {
+        uploadedFilesBlock.style.display = 'none'; // Hide the selected files block if no files are selected
     }
 });
 

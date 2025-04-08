@@ -15,9 +15,14 @@
     <div class="container">
         <h1>FactoryTalk Optix Runtime Logs Parser</h1>
         <div class="accordion" id="readmeBlock">
-            <button id="toggleReadmeButton" class="accordion-button">Show README</button>
-            <div id="readmeContent" class="accordion-content" style="display: none;"></div>
+            <div class="buttons">
+                <button id="toggleReadmeButton" class="accordion-button">Show README</button>
+                <button id="linkToRepoButton"
+                    onclick="window.location.href='https://github.com/ASEM-ApplicationSoftwareEngineers/OptixRuntimeLogsParser';">Source
+                    code</button>
+            </div>
         </div>
+        <div id="readmeContent" class="accordion-content" style="display: none;"></div>
         <br>
         <div id="uploadBlock">
             <form id="logForm">
@@ -29,12 +34,14 @@
                     <button type="submit">Parse Logs</button>
                 </div>
             </form>
-            <h2>Selected Files</h2>
-            <ul id="fileList"></ul>
+            <div id="selectedFilesBlock" style="display: none;">
+                <h2>Selected Files</h2>
+                <ul id="fileList"></ul>
+            </div>
         </div>
         <div id="outputBlock" style="display: none;">
             <pre id="output" style="display: none;"></pre>
-            
+
             <h2 style="display: none;">Rendered Markdown</h2>
             <div id="renderedMarkdown" class="markdown-container"></div>
             <br>
