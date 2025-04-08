@@ -32,7 +32,6 @@ document.getElementById('logForm').addEventListener('submit', async (event) => {
 
     // Enable the download button and set up the download functionality
     const downloadButton = document.getElementById('downloadButton');
-    downloadButton.style.display = 'block';
     downloadButton.onclick = () => downloadMarkdown(markdownOutput);
 
     // Render the Markdown content
@@ -238,19 +237,17 @@ function generateMarkdownOutput(pageInstances, warnings, errors, licenseInfo) {
         const cleanPageName = instance.pageName.replace(/_\d+$/, '');
 
         if (instance.nested) {
-            output += `### ${cleanPageName}\n\n`;
+            output += `### Nested page: ${cleanPageName}\n\n`;
         } else {
-            output += `## ${cleanPageName}\n\n`;
+            output += `## Page: ${cleanPageName}\n\n`;
             output += `Total load time: ${formattedValue(instance.totalLoadTime)} ms\n\n`;
         }
         output += `- Nodes: ${instance.createNodes} (${formattedValue(instance.nodesTime)} ms)\n`;
         output += `- UI Objects: ${instance.uiObjects} (${formattedValue(instance.uiTime)} ms)\n\n`;
 
         if (instance.entries.length) {
-            output += '| Module Name | Total Load Time (ms) | Number of Items |\n';
-            output += '| --- | --- | --- |\n';
             for (const [moduleName, benchmark1, benchmark2] of instance.entries) {
-                output += `| ${moduleName} | ${formattedValue(benchmark1)} | ${formattedValue(benchmark2)} |\n`;
+                output += `- ${moduleName}: ${formattedValue(benchmark2)} (${formattedValue(benchmark1)} ms)\n\n`;
             }
         }
         output += '\n';

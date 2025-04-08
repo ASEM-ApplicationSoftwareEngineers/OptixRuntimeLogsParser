@@ -20,6 +20,8 @@
                 <button id="linkToRepoButton"
                     onclick="window.location.href='https://github.com/ASEM-ApplicationSoftwareEngineers/OptixRuntimeLogsParser';">
                     Show source code</button>
+                <button id="refreshButton" onclick="window.location.href='./index.html';">Reset
+                    form</button>
             </div>
         </div>
         <div id="readmeContent" class="accordion-content" style="display: none;"></div>
@@ -45,8 +47,12 @@
             <h2 style="display: none;">Rendered Markdown</h2>
             <div id="renderedMarkdown" class="markdown-container"></div>
             <br>
-            <h2>Additional options</h2>
-            <button id="downloadButton" style="display: none;">Download parsed output as Markdown</button>
+            <div id="additionalOptionsButtons">
+                <h2>Additional options</h2>
+                <div class="additionalOptionsButtons">
+                    <button id="downloadButton">Download as Markdown</button>
+                </div>
+            </div>
         </div>
     </div>
     </div>
