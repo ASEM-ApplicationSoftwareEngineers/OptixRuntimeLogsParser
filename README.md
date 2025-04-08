@@ -43,8 +43,6 @@ This HTML file represents the main structure of a web-based application designed
 
     - The parsed output can be downloaded as a Markdown file using the "Download parsed output as Markdown" button (`id="downloadButton`). The file is generated and downloaded directly to the user's local file system without involving any server-side storage.
 
-## Recommendations
+# License
 
-- **Input Validation**: Ensure that additional validation is implemented in the JavaScript code to verify the contents of uploaded `.log` files, preventing potential abuse or injection attacks.
-- **Content Security Policy (CSP)**: Implement a strict CSP in the HTML `<head>` to prevent unauthorized scripts or styles from being executed.
-- **Sanitization**: Sanitize any user-generated content or log data before rendering it in the browser to prevent cross-site scripting (XSS) attacks.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
