@@ -6,6 +6,19 @@ This HTML file represents the main structure of a web-based application designed
 
 ## Application details
 
+### Supported features
+
+- Parsing `.log` files to extract performance data, warnings, and errors.
+- Generating a structured Markdown report from the parsed log data.
+- Displaying the parsed output in both raw and rendered Markdown formats.
+- Allowing users to download the parsed output as a Markdown file.
+- Extracting and organizing performance metrics such as load times, created nodes, and UI objects.
+- Handling nested and root-level log entries for detailed analysis.
+- Identifying and categorizing warnings and errors from the log files.
+- Ensuring client-side processing for enhanced security and privacy.
+- Providing a user-friendly interface for file upload and output visualization.
+- Supporting dynamic updates to the output display based on user actions.
+
 ### Application Security
 
 1. **Client-Side Processing**:
