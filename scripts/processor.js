@@ -1,8 +1,10 @@
 document.getElementById('logForm').addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const files = document.getElementById('logFiles').files;
-    if (files.length === 0) {
+    // Retrieve the selected files from the file list
+    const fileList = document.getElementById('fileList');
+    const selectedFiles = Array.from(fileList.children).map((li) => li.file);
+    if (selectedFiles.length === 0) {
         alert('Please upload at least one log file.');
         return;
     }
@@ -13,7 +15,7 @@ document.getElementById('logForm').addEventListener('submit', async (event) => {
     let capturingNested = false;
 
     // Read and process all files
-    for (const file of files) {
+    for (const file of selectedFiles) {
         const content = await file.text();
         const lines = content.split('\n');
         for (const line of lines) {
