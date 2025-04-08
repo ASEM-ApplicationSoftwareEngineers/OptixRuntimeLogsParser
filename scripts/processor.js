@@ -58,6 +58,10 @@ function renderMarkdown(content) {
     renderedMarkdown.innerHTML = marked.parse(content); // Use a Markdown library like "marked.js"
 }
 
+function trimmedTextOrNull(text) {
+    return text.trim().length > 0 ? text.trim() : null;
+}
+
 function processLine(line, pagesData, pageStack, pageCounter, capturingNested, warnings, errors, licenseInfo) {
     try {
         const rootMatch = line.match(/AddItem begin \(root\);;([^;]+)/);
@@ -107,24 +111,24 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested, w
         }
 
         // Extract warnings
-        const warningMatch = line.match(/WARNING;(.*?);([^;]*);([^;]*);(.*)/);
+        const warningMatch = line.match(/WARNING;(.*?);([^;]*);([^;]*);(.*);/);
         if (warningMatch) {
             warnings.push({
-                module: warningMatch[1].trim(),
-                code: warningMatch[2].trim(),
-                details: warningMatch[3].trim(),
-                stack_trace: warningMatch[4].trim().length > 1 ? warningMatch[4].trim() : null,
+                module: trimmedTextOrNull(warningMatch[1]),
+                code: trimmedTextOrNull(warningMatch[2]),
+                details: trimmedTextOrNull(warningMatch[3]),
+                stack_trace: trimmedTextOrNull(warningMatch[4]),
             });
         }
 
         // Extract errors
-        const errorMatch = line.match(/ERROR;(.*?);([^;]*);([^;]*);(.*)/);
+        const errorMatch = line.match(/ERROR;(.*?);([^;]*);([^;]*);(.*);/);
         if (errorMatch) {
             errors.push({
-                module: errorMatch[1].trim(),
-                code: errorMatch[2].trim(),
-                details: errorMatch[3].trim(),
-                stack_trace: errorMatch[4].trim().length > 1 ? errorMatch[4].trim() : null,
+                module: trimmedTextOrNull(errorMatch[1]),
+                code: trimmedTextOrNull(errorMatch[2]),
+                details: trimmedTextOrNull(errorMatch[3]),
+                stack_trace: trimmedTextOrNull(errorMatch[4]),
             });
         }
 
@@ -135,7 +139,7 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested, w
             licenseInfo.demoModeDuration = parseInt(demoModeMatch[1], 10);
         }
 
-        const tokensMatch = line.match(/FactoryTalk Optix Runtime is currently using (\d+) feature tokens\s+(.*)/);
+        const tokensMatch = line.match(/FactoryTalk Optix Runtime is currently using (\d+) feature tokens\s+([^;]*);([^;]*);/);
         if (tokensMatch) {
             const totalTokens = parseInt(tokensMatch[1], 10);
             const components = tokensMatch[2].split('\t').map((component) => component.trim()).filter((component) => component);
@@ -257,9 +261,19 @@ function generateMarkdownOutput(pageInstances, warnings, errors, licenseInfo) {
         output += '## Warnings\n\n';
         warnings.forEach((warning, index) => {
             output += `### Warning ${index + 1}\n`;
-            output += `- **Code**: ${warning.code}\n`;
-            output += `- **Module**: ${warning.module}\n`;
-            output += `- **Message**: ${warning.details}\n\n`;
+            if (warning.module) {
+                output += `- **Module**: ${warning.module}`;
+                if (!warning.module.includes('urn:FTOptix')) {
+                    output += ` (not a FactoryTalk Optix module)`;
+                }
+                output += `\n\n`;
+            }
+            if (warning.code) {
+                output += `- **Code**: ${warning.code}\n\n`;
+            }
+            if (warning.details) {
+                output += `- **Message**: ${warning.details}\n\n`;
+            }
             if (warning.stack_trace) {
                 output += `- **Stack Trace**: ${warning.stack_trace}\n\n`;
             }
@@ -271,9 +285,17 @@ function generateMarkdownOutput(pageInstances, warnings, errors, licenseInfo) {
         output += '## Errors\n\n';
         errors.forEach((error, index) => {
             output += `### Error ${index + 1}\n`;
-            output += `- **Code**: ${error.code}\n`;
-            output += `- **Module**: ${error.module}\n`;
-            output += `- **Message**: ${error.details}\n\n`;
+            output += `- **Module**: ${error.module}`;
+                if (!error.module.includes('urn:FTOptix')) {
+                    output += ` (not a FactoryTalk Optix module)`;
+                }
+                output += `\n\n`;
+            if (error.code) {
+                output += `- **Code**: ${error.code}\n\n`;
+            }
+            if (error.details) {
+                output += `- **Message**: ${error.details}\n\n`;
+            }
             if (error.stack_trace) {
                 output += `- **Stack Trace**: ${error.stack_trace}\n\n`;
             }
