@@ -1,30 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log Parser</title>
+    <title>FactoryTalk Optix Runtime Logs Parser</title>
+
+    <script src="scripts/marked.min.js"></script>
+
     <link rel="stylesheet" href="styles/styles.css">
 </head>
+
 <body>
     <div class="container">
-        <h1>Log Parser</h1>
-        <form id="logForm">
-            <label for="logFiles">Upload Log Files:</label>
-            <input type="file" id="logFiles" name="logFiles" accept=".log">
-            <div class="buttons">
-                <button type="button" id="addFileButton">Add File</button>
-                <button type="button" id="clearFilesButton">Clear Files</button>
-                <button type="submit">Parse Logs</button>
-            </div>
-        </form>
-        <h2>Selected Files</h2>
-        <ul id="fileList"></ul>
-        <h2>Output</h2>
-        <pre id="output"></pre>
+        <h1>FactoryTalk Optix Runtime Logs Parser</h1>
+        <div id="uploadBlock">
+            <form id="logForm">
+                <label for="logFiles">Upload Log Files:</label>
+                <input type="file" id="logFiles" name="logFiles" accept=".log">
+                <div class="buttons">
+                    <button type="button" id="addFileButton">Add File</button>
+                    <button type="button" id="clearFilesButton">Clear Files</button>
+                    <button type="submit">Parse Logs</button>
+                </div>
+            </form>
+            <h2>Selected Files</h2>
+            <ul id="fileList"></ul>
+        </div>
+        <div id="outputBlock" style="display: none;">
+            <pre id="output" style="display: none;"></pre>
+            
+            <h2 style="display: none;">Rendered Markdown</h2>
+            <div id="renderedMarkdown" class="markdown-container"></div>
+            <br>
+            <h2>Download options</h2>
+            <button id="downloadButton" style="display: none;">Download parsed output as Markdown</button>
+        </div>
+    </div>
     </div>
 
     <script src="scripts/uploader.js"></script>
     <script src="scripts/processor.js"></script>
 </body>
+
 </html>

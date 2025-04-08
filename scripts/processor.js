@@ -26,7 +26,34 @@ document.getElementById('logForm').addEventListener('submit', async (event) => {
     // Generate Markdown output
     const markdownOutput = generateMarkdownOutput(Object.values(pagesData));
     document.getElementById('output').textContent = markdownOutput;
+
+    // Enable the download button and set up the download functionality
+    const downloadButton = document.getElementById('downloadButton');
+    downloadButton.style.display = 'block';
+    downloadButton.onclick = () => downloadMarkdown(markdownOutput);
+
+    // Render the Markdown content
+    renderMarkdown(markdownOutput);
+
+    // Hide the file list and show the output area
+    document.getElementById('uploadBlock').style.display = 'none';
+    document.getElementById('outputBlock').style.display = 'block';
 });
+
+function downloadMarkdown(content) {
+    const blob = new Blob([content], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'log_output.md';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function renderMarkdown(content) {
+    const renderedMarkdown = document.getElementById('renderedMarkdown');
+    renderedMarkdown.innerHTML = marked.parse(content); // Use a Markdown library like "marked.js"
+}
 
 function processLine(line, pagesData, pageStack, pageCounter, capturingNested) {
     try {

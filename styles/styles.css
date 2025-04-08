@@ -1,3 +1,4 @@
+/* General styles for the page */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -92,4 +93,62 @@ pre {
     overflow-x: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
+}
+
+/* Scoped styles for the Markdown container */
+.markdown-container {
+    all: unset; /* Reset all inherited styles */
+    /* font-family: 'Georgia', serif; /* Use a different font for Markdown */
+    line-height: 1.6;
+    color: #000;
+}
+
+.markdown-container h1,
+.markdown-container h2,
+.markdown-container h3 {
+    margin: 1em 0 0.5em;
+    font-weight: bold;
+}
+
+.markdown-container h3 {
+    border-top: #000 solid 1px;
+}
+
+.markdown-container h2 {
+    border-top: #000 solid 2px;
+}
+
+.markdown-container p {
+    margin: 0.5em 0;
+}
+
+.markdown-container pre {
+    background: #f4f4f4;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.markdown-container ul {
+    list-style-type: circle;
+    border: none;
+    background: #ffffff00;
+    padding: 0px 0px;
+}
+
+.markdown-container li {
+    margin: 0.5em 0;
+    padding: 0px 0px;
+    padding-left: 20px;
+    position: relative;
+    border-bottom: none;
+}
+
+.markdown-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+    text-align: center;
+    border: #000 solid 1px;
+    border-radius: 4px;
 }
