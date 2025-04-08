@@ -4,20 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log Parser</title>
+    <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
-    <h1>Log Parser</h1>
-    <form id="logForm">
-        <label for="logFiles">Upload Log Files:</label>
-        <input type="file" id="logFiles" name="logFiles" accept=".log">
-        <button type="button" id="addFileButton">Add File</button>
-        <button type="button" id="clearFilesButton">Clear Files</button>
-        <button type="submit">Parse Logs</button>
-    </form>
-    <h2>Selected Files</h2>
-    <ul id="fileList"></ul>
-    <h2>Output</h2>
-    <pre id="output"></pre>
+    <div class="container">
+        <h1>Log Parser</h1>
+        <form id="logForm">
+            <label for="logFiles">Upload Log Files:</label>
+            <input type="file" id="logFiles" name="logFiles" accept=".log">
+            <div class="buttons">
+                <button type="button" id="addFileButton">Add File</button>
+                <button type="button" id="clearFilesButton">Clear Files</button>
+                <button type="submit">Parse Logs</button>
+            </div>
+        </form>
+        <h2>Selected Files</h2>
+        <ul id="fileList"></ul>
+        <h2>Output</h2>
+        <pre id="output"></pre>
+    </div>
 
     <script src="scripts/uploader.js"></script>
     <script src="scripts/processor.js"></script>
