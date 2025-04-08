@@ -14,6 +14,11 @@
 <body>
     <div class="container">
         <h1>FactoryTalk Optix Runtime Logs Parser</h1>
+        <div class="accordion" id="readmeBlock">
+            <button id="toggleReadmeButton" class="accordion-button">Show README</button>
+            <div id="readmeContent" class="accordion-content" style="display: none;"></div>
+        </div>
+        <br>
         <div id="uploadBlock">
             <form id="logForm">
                 <label for="logFiles">Upload Log Files:</label>
@@ -41,6 +46,7 @@
 
     <script src="scripts/uploader.js"></script>
     <script src="scripts/processor.js"></script>
+    <script src="scripts/readmeLoader.js"></script>
 </body>
 
 </html>
