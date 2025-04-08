@@ -25,4 +25,5 @@ addFileButton.addEventListener('click', () => {
 // Clear all selected files
 clearFilesButton.addEventListener('click', () => {
     fileList.innerHTML = ''; // Clear the displayed list
+    uploadedFilesBlock.style.display = 'none'; // Hide the selected files block
 });
