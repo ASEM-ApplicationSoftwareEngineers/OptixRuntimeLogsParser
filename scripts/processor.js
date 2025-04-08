@@ -15,18 +15,19 @@ document.getElementById('logForm').addEventListener('submit', async (event) => {
     let capturingNested = false;
     const warnings = [];
     const errors = [];
+    const licenseInfo = { demoMode: false, demoModeDuration: 0, totalTokens: 0, components: [] };
 
     // Read and process all files
     for (const file of selectedFiles) {
         const content = await file.text();
         const lines = content.split('\n');
         for (const line of lines) {
-            processLine(line, pagesData, pageStack, pageCounter, capturingNested, warnings, errors);
+            processLine(line, pagesData, pageStack, pageCounter, capturingNested, warnings, errors, licenseInfo);
         }
     }
 
     // Generate Markdown output
-    const markdownOutput = generateMarkdownOutput(Object.values(pagesData), warnings, errors);
+    const markdownOutput = generateMarkdownOutput(Object.values(pagesData), warnings, errors, licenseInfo);
     document.getElementById('output').textContent = markdownOutput;
 
     // Enable the download button and set up the download functionality
@@ -57,7 +58,7 @@ function renderMarkdown(content) {
     renderedMarkdown.innerHTML = marked.parse(content); // Use a Markdown library like "marked.js"
 }
 
-function processLine(line, pagesData, pageStack, pageCounter, capturingNested, warnings, errors) {
+function processLine(line, pagesData, pageStack, pageCounter, capturingNested, warnings, errors, licenseInfo) {
     try {
         const rootMatch = line.match(/AddItem begin \(root\);;([^;]+)/);
         const nestedMatch = line.match(/AddItem begin \(nested root\);;([^;]+)/);
@@ -114,13 +115,27 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested, w
             });
         }
 
-        // Extract errors
-        const errorMatch = line.match(/ERROR;(.*?);;(.*)/);
+        // Extract errors (updated regex to handle missing ";;")
+        const errorMatch = line.match(/ERROR;(.*?);([^;]*);(.*)/);
         if (errorMatch) {
             errors.push({
-                message: errorMatch[1].trim(),
-                details: errorMatch[2].trim(),
+                message: errorMatch[2].trim(),
+                details: errorMatch[3].trim(),
             });
+        }
+
+        // Extract license information
+        const demoModeMatch = line.match(/Demo mode started\. FactoryTalk Optix Runtime will be closed in (\d+) minutes/);
+        if (demoModeMatch) {
+            licenseInfo.demoMode = true;
+            licenseInfo.demoModeDuration = parseInt(demoModeMatch[1], 10);
+        }
+
+        const tokensMatch = line.match(/FactoryTalk Optix Runtime is currently using (\d+) feature tokens\s+(.*)/);
+        if (tokensMatch) {
+            licenseInfo.totalTokens = parseInt(tokensMatch[1], 10);
+            const components = tokensMatch[2].split('\t').map((component) => component.trim());
+            licenseInfo.components = components.filter((component) => component);
         }
     } catch (error) {
         console.error('Error processing line:', error);
@@ -176,8 +191,27 @@ function addPerformanceData(line, pagesData, pageStack, capturingNested) {
     }
 }
 
-function generateMarkdownOutput(pageInstances, warnings, errors) {
+function generateMarkdownOutput(pageInstances, warnings, errors, licenseInfo) {
     let output = '# Log files analysis\n\n';
+
+    // Add license information
+    if (licenseInfo.demoMode) {
+        output += `## License Information\n\n`;
+        output += `- **Demo Mode**: Enabled (will close in ${licenseInfo.demoModeDuration} minutes)\n`;
+    } else {
+        output += `## License Information\n\n`;
+        output += `- **Demo Mode**: Disabled\n`;
+    }
+
+    if (licenseInfo.totalTokens) {
+        output += `- **Total Tokens Used**: ${licenseInfo.totalTokens}\n`;
+        output += `- **Components**:\n`;
+        licenseInfo.components.forEach((component) => {
+            output += `  - ${component}\n`;
+        });
+    }
+
+    output += '\n';
 
     for (const instance of pageInstances) {
         const cleanPageName = instance.pageName.replace(/_\d+$/, '');
