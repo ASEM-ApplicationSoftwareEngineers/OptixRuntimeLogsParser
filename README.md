@@ -4,6 +4,8 @@
 
 This HTML file represents the main structure of a web-based application designed to parse FactoryTalk Optix runtime log files. The application allows users to upload `.log` files, process them, and view the parsed output in both raw and rendered Markdown formats. Additionally, users can download the parsed output as a Markdown file.
 
+This application is available at: [FactoryTalk Optix Runtime Logs Parser](https://asem-applicationsoftwareengineers.github.io/OptixRuntimeLogsParser/).
+
 ## Application details
 
 ### Supported features
@@ -15,6 +17,8 @@ This HTML file represents the main structure of a web-based application designed
 - Extracting and organizing performance metrics such as load times, created nodes, and UI objects.
 - Handling nested and root-level log entries for detailed analysis.
 - Identifying and categorizing warnings and errors from the log files.
+- Providing a user-friendly interface to analyze the licensing status of the application.
+- Supporting multiple file uploads for batch processing of log files.
 - Ensuring client-side processing for enhanced security and privacy.
 - Providing a user-friendly interface for file upload and output visualization.
 - Supporting dynamic updates to the output display based on user actions.
