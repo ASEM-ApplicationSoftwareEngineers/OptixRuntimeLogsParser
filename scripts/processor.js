@@ -13,18 +13,20 @@ document.getElementById('logForm').addEventListener('submit', async (event) => {
     const pageStack = [];
     const pageCounter = {};
     let capturingNested = false;
+    const warnings = [];
+    const errors = [];
 
     // Read and process all files
     for (const file of selectedFiles) {
         const content = await file.text();
         const lines = content.split('\n');
         for (const line of lines) {
-            processLine(line, pagesData, pageStack, pageCounter, capturingNested);
+            processLine(line, pagesData, pageStack, pageCounter, capturingNested, warnings, errors);
         }
     }
 
     // Generate Markdown output
-    const markdownOutput = generateMarkdownOutput(Object.values(pagesData));
+    const markdownOutput = generateMarkdownOutput(Object.values(pagesData), warnings, errors);
     document.getElementById('output').textContent = markdownOutput;
 
     // Enable the download button and set up the download functionality
@@ -55,7 +57,7 @@ function renderMarkdown(content) {
     renderedMarkdown.innerHTML = marked.parse(content); // Use a Markdown library like "marked.js"
 }
 
-function processLine(line, pagesData, pageStack, pageCounter, capturingNested) {
+function processLine(line, pagesData, pageStack, pageCounter, capturingNested, warnings, errors) {
     try {
         const rootMatch = line.match(/AddItem begin \(root\);;([^;]+)/);
         const nestedMatch = line.match(/AddItem begin \(nested root\);;([^;]+)/);
@@ -101,6 +103,24 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested) {
                     break;
                 }
             }
+        }
+
+        // Extract warnings
+        const warningMatch = line.match(/WARNING;(.*?);;(.*)/);
+        if (warningMatch) {
+            warnings.push({
+                message: warningMatch[1].trim(),
+                details: warningMatch[2].trim(),
+            });
+        }
+
+        // Extract errors
+        const errorMatch = line.match(/ERROR;(.*?);;(.*)/);
+        if (errorMatch) {
+            errors.push({
+                message: errorMatch[1].trim(),
+                details: errorMatch[2].trim(),
+            });
         }
     } catch (error) {
         console.error('Error processing line:', error);
@@ -156,8 +176,8 @@ function addPerformanceData(line, pagesData, pageStack, capturingNested) {
     }
 }
 
-function generateMarkdownOutput(pageInstances) {
-    let output = '# Page Load Timing Report\n\n';
+function generateMarkdownOutput(pageInstances, warnings, errors) {
+    let output = '# Log files analysis\n\n';
 
     for (const instance of pageInstances) {
         const cleanPageName = instance.pageName.replace(/_\d+$/, '');
@@ -179,6 +199,26 @@ function generateMarkdownOutput(pageInstances) {
             }
         }
         output += '\n';
+    }
+
+    // Add warnings section
+    if (warnings.length > 0) {
+        output += '## Warnings\n\n';
+        warnings.forEach((warning, index) => {
+            output += `### Warning ${index + 1}\n`;
+            output += `- **Message**: ${warning.message}\n`;
+            output += `- **Details**: ${warning.details}\n\n`;
+        });
+    }
+
+    // Add errors section
+    if (errors.length > 0) {
+        output += '## Errors\n\n';
+        errors.forEach((error, index) => {
+            output += `### Error ${index + 1}\n`;
+            output += `- **Message**: ${error.message}\n`;
+            output += `- **Details**: ${error.details}\n\n`;
+        });
     }
 
     return output;
