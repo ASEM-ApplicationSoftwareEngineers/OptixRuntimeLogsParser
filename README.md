@@ -4,29 +4,39 @@
 
 This HTML file represents the main structure of a web-based application designed to parse FactoryTalk Optix runtime log files. The application allows users to upload `.log` files, process them, and view the parsed output in both raw and rendered Markdown formats. Additionally, users can download the parsed output as a Markdown file.
 
-## Application Security
+## Application details
 
-1. **File Upload Restrictions**:
+### Application Security
 
-    - The file input element (`<input type="file">`) restricts uploads to files with a `.log` extension using the `accept` attribute. This helps prevent users from uploading unsupported or potentially harmful file types.
+1. **Client-Side Processing**:
 
-2. **Client-Side Processing**:
+    - All file processing is handled on the client side using JavaScript (`scripts/uploader.js` and `scripts/processor.js`). This reduces the risk of server-side vulnerabilities, as no files are uploaded to a server for processing.
 
-    - All file processing appears to be handled on the client side using JavaScript (`scripts/uploader.js` and `scripts/processor.js`). This reduces the risk of server-side vulnerabilities, as no files are uploaded to a server for processing.
-
-3. **File Handling**:
+2. **File Handling**:
 
     - Uploaded files are temporarily stored in memory on the client side and are not persisted to any server or external storage. This ensures that sensitive log data remains on the user's device and is not exposed to external systems.
 
-4. **Output Display**:
+3. **Output Display**:
 
     - The parsed output is displayed within the browser using a `<pre>` element for raw output and a `<div>` for rendered Markdown. This ensures that the output is sandboxed within the browser environment, minimizing the risk of unintended execution of malicious content.
 
-5. **Download Functionality**:
+4. **Download Functionality**:
 
     - The application provides a button to download the parsed output as a Markdown file. This functionality is implemented entirely on the client side, ensuring that no data is transmitted to external servers.
 
-## File Storage and Processing
+5. **Volatile Storage**:
+
+    - The application does not use any persistent storage mechanisms (e.g., local storage, cookies) to store user data or uploaded files. All data is kept in memory and is cleared when the page is refreshed or closed.
+
+6. **No external libraries**:
+
+    - The application does not rely on any external libraries or frameworks for file processing or rendering. All functionality is implemented using standard HTML, CSS, and JavaScript, reducing the attack surface and ensuring that the code is easy to audit.
+
+7. **CORS and Same-Origin Policy**:
+
+    - The application does not make any cross-origin requests or rely on external APIs, ensuring that it operates within the same-origin policy of the browser. This minimizes the risk of cross-site scripting (XSS) attacks and other vulnerabilities associated with cross-origin resource sharing.
+
+### File Storage and Processing
 
 1. **File Upload**:
     - Users upload `.log` files through the file input element (`<input type="file" id="logFiles">`). The selected files are displayed in a list (`<ul id="fileList">`) for user confirmation.
@@ -43,6 +53,6 @@ This HTML file represents the main structure of a web-based application designed
 
     - The parsed output can be downloaded as a Markdown file using the "Download parsed output as Markdown" button (`id="downloadButton`). The file is generated and downloaded directly to the user's local file system without involving any server-side storage.
 
-# License
+## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
