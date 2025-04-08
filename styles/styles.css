@@ -133,7 +133,7 @@ pre {
 .markdown-container ul {
     list-style-type: circle;
     border: none;
-    background: #ffffff00;
+    /*background: #ffffff00;*/
     padding: 0px 0px;
 }
 
