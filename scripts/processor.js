@@ -107,20 +107,24 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested, w
         }
 
         // Extract warnings
-        const warningMatch = line.match(/WARNING;(.*?);;(.*)/);
+        const warningMatch = line.match(/WARNING;(.*?);([^;]*);([^;]*);(.*)/);
         if (warningMatch) {
             warnings.push({
-                message: warningMatch[1].trim(),
-                details: warningMatch[2].trim(),
+                module: warningMatch[1].trim(),
+                code: warningMatch[2].trim(),
+                details: warningMatch[3].trim(),
+                stack_trace: warningMatch[4].trim().length > 1 ? warningMatch[4].trim() : null,
             });
         }
 
-        // Extract errors (updated regex to handle missing ";;")
-        const errorMatch = line.match(/ERROR;(.*?);([^;]*);(.*)/);
+        // Extract errors
+        const errorMatch = line.match(/ERROR;(.*?);([^;]*);([^;]*);(.*)/);
         if (errorMatch) {
             errors.push({
-                message: errorMatch[2].trim(),
+                module: errorMatch[1].trim(),
+                code: errorMatch[2].trim(),
                 details: errorMatch[3].trim(),
+                stack_trace: errorMatch[4].trim().length > 1 ? errorMatch[4].trim() : null,
             });
         }
 
@@ -133,9 +137,17 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested, w
 
         const tokensMatch = line.match(/FactoryTalk Optix Runtime is currently using (\d+) feature tokens\s+(.*)/);
         if (tokensMatch) {
-            licenseInfo.totalTokens = parseInt(tokensMatch[1], 10);
-            const components = tokensMatch[2].split('\t').map((component) => component.trim());
-            licenseInfo.components = components.filter((component) => component);
+            const totalTokens = parseInt(tokensMatch[1], 10);
+            const components = tokensMatch[2].split('\t').map((component) => component.trim()).filter((component) => component);
+
+            // Add this license entry to the licenseInfo array
+            if (!licenseInfo.entries) {
+                licenseInfo.entries = [];
+            }
+            licenseInfo.entries.push({
+                totalTokens,
+                components,
+            });
         }
     } catch (error) {
         console.error('Error processing line:', error);
@@ -203,11 +215,16 @@ function generateMarkdownOutput(pageInstances, warnings, errors, licenseInfo) {
         output += `- **Demo Mode**: Disabled\n`;
     }
 
-    if (licenseInfo.totalTokens) {
-        output += `- **Total Tokens Used**: ${licenseInfo.totalTokens}\n`;
-        output += `- **Components**:\n`;
-        licenseInfo.components.forEach((component) => {
-            output += `  - ${component}\n`;
+    if (licenseInfo.entries && licenseInfo.entries.length > 0) {
+        output += `### License Entries\n\n`;
+        licenseInfo.entries.forEach((entry, index) => {
+            output += `#### Entry ${index + 1}\n`;
+            output += `- **Total Tokens Used**: ${entry.totalTokens}\n`;
+            output += `- **Components**:\n`;
+            entry.components.forEach((component) => {
+                output += `  - ${component}\n`;
+            });
+            output += '\n';
         });
     }
 
@@ -240,8 +257,12 @@ function generateMarkdownOutput(pageInstances, warnings, errors, licenseInfo) {
         output += '## Warnings\n\n';
         warnings.forEach((warning, index) => {
             output += `### Warning ${index + 1}\n`;
-            output += `- **Message**: ${warning.message}\n`;
-            output += `- **Details**: ${warning.details}\n\n`;
+            output += `- **Code**: ${warning.code}\n`;
+            output += `- **Module**: ${warning.module}\n`;
+            output += `- **Message**: ${warning.details}\n\n`;
+            if (warning.stack_trace) {
+                output += `- **Stack Trace**: ${warning.stack_trace}\n\n`;
+            }
         });
     }
 
@@ -250,8 +271,12 @@ function generateMarkdownOutput(pageInstances, warnings, errors, licenseInfo) {
         output += '## Errors\n\n';
         errors.forEach((error, index) => {
             output += `### Error ${index + 1}\n`;
-            output += `- **Message**: ${error.message}\n`;
-            output += `- **Details**: ${error.details}\n\n`;
+            output += `- **Code**: ${error.code}\n`;
+            output += `- **Module**: ${error.module}\n`;
+            output += `- **Message**: ${error.details}\n\n`;
+            if (error.stack_trace) {
+                output += `- **Stack Trace**: ${error.stack_trace}\n\n`;
+            }
         });
     }
 
