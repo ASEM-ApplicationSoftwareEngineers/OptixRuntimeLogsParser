@@ -135,7 +135,7 @@ pre {
     border: none;
     /*background: #ffffff00;*/
     padding: 0px 0px;
-    max-height: 256px;
+    max-height: 128px;
 }
 
 .markdown-container li {
@@ -144,6 +144,10 @@ pre {
     padding-left: 20px;
     position: relative;
     border-bottom: none;
+}
+
+.markdown-container ul li ul {
+    max-height: none;
 }
 
 .markdown-container table {
