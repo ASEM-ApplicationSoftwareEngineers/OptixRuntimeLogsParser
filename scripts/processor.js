@@ -82,6 +82,7 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested, w
             capturingNested = true;
         }
 
+        // 08-04-2025 15:44:21.663;DEBUG;urn:FTOptix:WebUI;;Start [Module],0,0,0.000;;
         addPerformanceData(line, pagesData, pageStack, capturingNested);
 
         if (endNestedMatch) {
@@ -98,12 +99,12 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested, w
             }
         }
 
-        const addItemMatch = line.match(/AddItem,(\d+)/);
+        // 08-04-2025 15:44:21.730;DEBUG;urn:FTOptix:WebUI;;AddItem,230;;
+        const addItemMatch = line.match(/AddItem,(\d+);;/);
         if (addItemMatch) {
-            for (let i = pageStack.length - 1; i >= 0; i--) {
-                const lastPage = pagesData[pageStack[i]];
-                if (lastPage && lastPage.nested === false) {
-                    lastPage.totalLoadTime = parseInt(addItemMatch[1], 10);
+            for (const key in pagesData) {
+                if (pagesData[key].totalLoadTime === null) {
+                    pagesData[key].totalLoadTime = parseInt(addItemMatch[1], 10);
                     break;
                 }
             }
@@ -169,7 +170,7 @@ function getUniquePageName(pageName, pageCounter) {
 function createPageInstance(pageName) {
     return {
         pageName: pageName,
-        totalLoadTime: 0,
+        totalLoadTime: null,
         createNodes: 0,
         uiObjects: 0,
         nodesTime: 0,
@@ -241,8 +242,19 @@ function generateMarkdownOutput(pageInstances, warnings, errors, licenseInfo) {
             output += `### Nested page: ${cleanPageName}\n\n`;
         } else {
             output += `## Page: ${cleanPageName}\n\n`;
-            output += `Total load time: ${formattedValue(instance.totalLoadTime)} ms\n\n`;
         }
+
+        output += `Load time: `;
+        if (instance.totalLoadTime === null) {
+            output += 'n/a\n\n';
+        } else {
+            output += `${formattedValue(instance.totalLoadTime)} ms`
+            if (instance.nested) {
+                output += ` (inaccurate due to nested page loading)`;
+            }
+            output += `\n\n`;
+        }
+
         output += `- Nodes: ${instance.createNodes} (${formattedValue(instance.nodesTime)} ms)\n`;
         output += `- UI Objects: ${instance.uiObjects} (${formattedValue(instance.uiTime)} ms)\n\n`;
 
@@ -284,10 +296,10 @@ function generateMarkdownOutput(pageInstances, warnings, errors, licenseInfo) {
         errors.forEach((error, index) => {
             output += `### Error ${index + 1}\n`;
             output += `- **Module**: ${error.module}`;
-                if (!error.module.includes('urn:FTOptix')) {
-                    output += ` (not a FactoryTalk Optix module)`;
-                }
-                output += `\n\n`;
+            if (!error.module.includes('urn:FTOptix')) {
+                output += ` (not a FactoryTalk Optix module)`;
+            }
+            output += `\n\n`;
             if (error.code) {
                 output += `- **Code**: ${error.code}\n\n`;
             }
