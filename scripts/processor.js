@@ -12,7 +12,6 @@ document.getElementById('logForm').addEventListener('submit', async (event) => {
     const pagesData = {};
     const pageStack = [];
     const pageCounter = {};
-    const lastPage = null;
     let capturingNested = false;
     const warnings = [];
     const errors = [];
@@ -101,12 +100,25 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested, w
             }
         }
 
-        // 08-04-2025 15:44:21.730;DEBUG;urn:FTOptix:WebUI;;AddItem,230;;
-        const addItemMatch = line.match(/AddItem,(\d+);;/);
-        if (addItemMatch) {
+        // NativeUI generates an entry for each nested root (+1 for the root page)
+        // 05-03-2025 09:34:24.902;DEBUG;urn:FTOptix:NativeUI;;AddItem,1271;;
+        const addItemNativeMatch = line.match(/urn:FTOptix:NativeUI;;AddItem,(\d+);;/);
+        if (addItemNativeMatch) {
             for (const key in pagesData) {
                 if (pagesData[key].totalLoadTime === null) {
-                    pagesData[key].totalLoadTime = parseInt(addItemMatch[1], 10);
+                    pagesData[key].totalLoadTime = parseInt(addItemNativeMatch[1], 10);
+                    break;
+                }
+            }
+        }
+
+        // WebUI generates a single entry for the root page
+        // 08-04-2025 15:44:21.730;DEBUG;urn:FTOptix:WebUI;;AddItem,230;;
+        const addItemWebMatch = line.match(/urn:FTOptix:WebUI;;AddItem,(\d+);;/);
+        if (addItemWebMatch) {
+            for (const key in pagesData) {
+                if (pagesData[key].totalLoadTime === null && pagesData[key].nested === false) {
+                    pagesData[key].totalLoadTime = parseInt(addItemWebMatch[1], 10);
                     break;
                 }
             }

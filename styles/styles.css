@@ -135,6 +135,7 @@ pre {
     border: none;
     /*background: #ffffff00;*/
     padding: 0px 0px;
+    max-height: 256px;
 }
 
 .markdown-container li {
