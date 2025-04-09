@@ -138,7 +138,8 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested, w
             licenseInfo.demoModeDuration = parseInt(demoModeMatch[1], 10);
         }
 
-        const tokensMatch = line.match(/FactoryTalk Optix Runtime is currently using (\d+) feature tokens\s+([^;]*);([^;]*);/);
+        // 08-04-2025 17:04:11.074;INFO;urn:FTOptix:LicenseManager;;FactoryTalk Optix Runtime is currently using 1 feature token	Component: Native presentation engine consumes 1 feature token	;;
+        const tokensMatch = line.match(/FactoryTalk Optix Runtime is currently using (\d+) feature token(?:s)?\s+([^;]*);([^;]*);/);
         if (tokensMatch) {
             const totalTokens = parseInt(tokensMatch[1], 10);
             const components = tokensMatch[2].split('\t').map((component) => component.trim()).filter((component) => component);
