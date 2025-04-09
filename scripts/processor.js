@@ -125,7 +125,8 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested, w
         }
 
         // Extract warnings
-        const warningMatch = line.match(/WARNING;(.*?);([^;]*);([^;]*);(.*);/);
+        // 09-04-2025 09:58:03.219;WARNING;urn:FTOptix:CoreBase;;[Message];;[Object]
+        const warningMatch = line.match(/WARNING;(.*?);([^;]*);([^;]*);;(.*)/);
         if (warningMatch) {
             warnings.push({
                 module: trimmedTextOrNull(warningMatch[1]),
