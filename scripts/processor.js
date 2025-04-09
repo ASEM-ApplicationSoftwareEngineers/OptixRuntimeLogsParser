@@ -12,6 +12,7 @@ document.getElementById('logForm').addEventListener('submit', async (event) => {
     const pagesData = {};
     const pageStack = [];
     const pageCounter = {};
+    const lastPage = null;
     let capturingNested = false;
     const warnings = [];
     const errors = [];
@@ -73,6 +74,7 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested, w
             const uniqueName = getUniquePageName(pageName, pageCounter);
             pagesData[uniqueName] = createPageInstance(pageName);
             pageStack.push(uniqueName);
+            lastPage = uniqueName;
             capturingNested = false;
         } else if (nestedMatch) {
             const pageName = nestedMatch[1].split('/').pop();
@@ -154,6 +156,39 @@ function processLine(line, pagesData, pageStack, pageCounter, capturingNested, w
                 components,
             });
         }
+
+        // 05-03-2025 09:34:30.771;DEBUG;urn:FTOptix:NativeUI;;Qt create,711;;
+        const qtCreateMatch = line.match(/Qt create,(\d+);;/);
+        if (qtCreateMatch) {
+            for (const key in pagesData) {
+                if (pagesData[key].qtCreate === null) {
+                    pagesData[key].qtCreate = parseInt(qtCreateMatch[1], 10);
+                    break;
+                }
+            }
+        }
+
+        // 05-03-2025 09:34:30.790;DEBUG;urn:FTOptix:NativeUI;;Qt model completed,8;;
+        const qtModelMatch = line.match(/Qt model completed,(\d+);;/);
+        if (qtModelMatch) {
+            for (const key in pagesData) {
+                if (pagesData[key].qtModel === null) {
+                    pagesData[key].qtModel = parseInt(qtModelMatch[1], 10);
+                    break;
+                }
+            }
+        }
+
+        // 05-03-2025 09:34:30.790;DEBUG;urn:FTOptix:NativeUI;;Qt before before rendering,731;;
+        const qtTotalMatch = line.match(/Qt before before rendering,(\d+);;/);
+        if (qtTotalMatch) {
+            for (const key in pagesData) {
+                if (pagesData[key].qtTotal === null) {
+                    pagesData[key].qtTotal = parseInt(qtTotalMatch[1], 10);
+                    break;
+                }
+            }
+        }
     } catch (error) {
         console.error('Error processing line:', error);
     }
@@ -176,7 +211,10 @@ function createPageInstance(pageName) {
         nodesTime: 0,
         uiTime: 0,
         entries: [],
-        nested: false
+        nested: false,
+        qtCreate: null,
+        qtModel: null,
+        qtTotal: null
     };
 }
 
@@ -240,6 +278,7 @@ function generateMarkdownOutput(pageInstances, warnings, errors, licenseInfo) {
 
         if (instance.nested) {
             output += `### Nested page: ${cleanPageName}\n\n`;
+            output += `(results might be inaccurate as the page is nested)\n\n`;
         } else {
             output += `## Page: ${cleanPageName}\n\n`;
         }
@@ -248,11 +287,7 @@ function generateMarkdownOutput(pageInstances, warnings, errors, licenseInfo) {
         if (instance.totalLoadTime === null) {
             output += 'n/a\n\n';
         } else {
-            output += `${formattedValue(instance.totalLoadTime)} ms`
-            if (instance.nested) {
-                output += ` (inaccurate due to nested page loading)`;
-            }
-            output += `\n\n`;
+            output += `${formattedValue(instance.totalLoadTime)} ms\n\n`;
         }
 
         output += `- Nodes: ${instance.createNodes} (${formattedValue(instance.nodesTime)} ms)\n`;
@@ -262,6 +297,17 @@ function generateMarkdownOutput(pageInstances, warnings, errors, licenseInfo) {
             for (const [moduleName, benchmark1, benchmark2] of instance.entries) {
                 output += `- ${moduleName}: ${formattedValue(benchmark2)} (${formattedValue(benchmark1)} ms)\n\n`;
             }
+        }
+
+        // Add Qt performance data
+        if (instance.qtCreate !== null) {
+            output += `- Qt create: ${formattedValue(instance.qtCreate)} ms\n`;
+        }
+        if (instance.qtModel !== null) {
+            output += `- Qt model: ${formattedValue(instance.qtModel)} ms\n`;
+        }
+        if (instance.qtTotal !== null) {
+            output += `- Qt total: ${formattedValue(instance.qtTotal)} ms\n`;
         }
         output += '\n';
     }
